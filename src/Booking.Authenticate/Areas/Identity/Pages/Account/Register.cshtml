@@ -1,0 +1,99 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div class="card shadow-2-strong" style="border-radius: 1rem;">
+                <div class="card-body p-6 text-center">
+                    <h3 class="mb-3">Register</h3>
+
+                    @foreach (var item in ViewContext.ViewData.ModelState)
+                    {
+                        if (item.Value.Errors.Any())
+                        {
+                            <div class="text-danger" style="padding-bottom: 20px;">
+                                @(string.Join("; ", item.Value.Errors.Select(x => x.ErrorMessage)))
+                            </div>
+                        }
+                    }
+
+                    <section>
+                        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+
+                            <div class="form-outline mb-2">
+                                <input asp-for="Input.UserName" type="text" class="form-control form-control-lg" placeholder="User Name" />
+                                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-outline mb-2">
+                                <input asp-for="Input.Email" type="email" class="form-control form-control-lg" placeholder="Email" />
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-outline mb-2">
+                                <input asp-for="Input.Password" type="password" class="form-control form-control-lg" placeholder="Password" />
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-outline mb-2">
+                                <input asp-for="Input.ConfirmPassword" type="password" class="form-control form-control-lg" placeholder="Confirm Password" />
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-outline mb-2">
+                                <input asp-for="Input.FirstName" type="text" class="form-control form-control-lg" placeholder="First Name" />
+                                <span asp-validation-for="Input.FirstName" class="text-danger" />
+                            </div>
+
+                            <div class="form-outline mb-2">
+                                <input asp-for="Input.LastName" type="text" class="form-control form-control-lg" placeholder="Last Name" />
+                                <span asp-validation-for="Input.LastName" class="text-danger" />
+                            </div>
+
+                            <div class="form-outline mb-2">
+                                <input asp-for="Input.PhoneNumber" type="text" class="form-control form-control-lg" placeholder="Phone Number" />
+                                <span asp-validation-for="Input.PhoneNumber" class="text-danger" />
+                            </div>
+
+                            <div class="form-outline mb-4">
+                                <input asp-for="Input.DateOfBirth" value="@DateTime.Now.AddYears(-16).ToString("yyyy-MM-dd")" type="date" class="form-control form-control-lg" placeholder="Date Of Birth" />
+                                <span asp-validation-for="Input.DateOfBirth" class="text-danger" />
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
+                        </form>
+                    </section>
+
+                    <hr class="my-2">
+
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins)
+                                {
+                                    <button type="submit" class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                        <i class="fab fa-google me-2"></i> &emsp; Register with @provider.DisplayName
+                                    </button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+
+                    <div class="form-group">
+                        <p>
+                            <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Goto login page</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

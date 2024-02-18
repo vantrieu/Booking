@@ -1,0 +1,83 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div class="card shadow-2-strong" style="border-radius: 1rem;">
+                <div class="card-body p-6 text-center">
+                    <h3 class="mb-5">Sign in</h3>
+
+                    @foreach (var item in ViewContext.ViewData.ModelState)
+                    {
+                        if (item.Value.Errors.Any())
+                        {
+                            <div class="text-danger" style="padding-bottom: 20px;">
+                                @(string.Join("; ", item.Value.Errors.Select(x => x.ErrorMessage)))
+                            </div>
+                        }
+                    }
+
+                    <section>
+                        <form id="account" method="post">
+
+                            <div class="form-outline mb-4">
+                                <input asp-for="Input.UserNameOrEmail" type="text" class="form-control form-control-lg" placeholder="User name or email" />
+                                <span asp-validation-for="Input.UserNameOrEmail" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-outline mb-4">
+                                <input asp-for="Input.Password" type="password" class="form-control form-control-lg" placeholder="Password" />
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+
+                            <!-- Checkbox -->
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label asp-for="Input.RememberMe">
+                                        <input asp-for="Input.RememberMe" />
+                                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+                        </form>
+                    </section>
+
+                    <hr class="my-4">
+
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins)
+                                {
+                                    <button type="submit" class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                        <i class="fab fa-google me-2"></i> &emsp; Sign in with @provider.DisplayName
+                                    </button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+
+                    <div class="form-group">
+                        <p>
+                            <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                        </p>
+                        <p>
+                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
