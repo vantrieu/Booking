@@ -1,3 +1,4 @@
+using Booking.Gateway.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
@@ -18,7 +19,7 @@ namespace Booking.Gateway
                 .AddJwtBearer(options =>
                 {
                     options.Authority = "http://localhost:8080";
-                    options.Audience = "your-api-resource";
+                    options.Audience = "swagger.api";
                     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -32,8 +33,9 @@ namespace Booking.Gateway
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            //builder.Services.AddEndpointsApiExplorer();
+            //builder.Services.AddSwaggerGen();
+            builder.Services.AddSwashbuckle(configuration);
             builder.Services.AddOcelot(configuration);
 
             var app = builder.Build();
@@ -41,8 +43,9 @@ namespace Booking.Gateway
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                //app.UseSwagger();
+                //app.UseSwaggerUI();
+                app.UseSwashbuckle(configuration);
             }
 
             app.UseOcelot();
