@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
+
 namespace Booking.Gateway
 {
     public class Program
@@ -6,29 +10,46 @@ namespace Booking.Gateway
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("ocelot.json").Build();
+
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = "http://localhost:8080";
+                    options.Audience = "your-api-resource";
+                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true
+                    };
+                    options.RequireHttpsMetadata = false;
+                });
+
+
+            builder.Services.AddControllers();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+            builder.Services.AddOcelot(configuration);
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseOcelot();
 
-            app.UseRouting();
+            //app.UseAuthorization();
 
-            app.UseAuthorization();
-
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapControllers();
 
             app.Run();
         }
